@@ -1,39 +1,23 @@
-import TrackPlayer, {
-  useTrackPlayerEvents,
-  TrackPlayerEvents,
-  STATE_PLAYING,
-} from 'react-native-track-player';
-import {useEffect, useState} from 'react';
-
-// Subscribing to the following events inside MyComponent
-const events = [
-  TrackPlayerEvents.PLAYBACK_STATE,
-  TrackPlayerEvents.PLAYBACK_ERROR,
-];
+import {useTrackPlayerEvents, Event, State} from 'react-native-track-player';
+import {useState} from 'react';
 
 const usePlayer = () => {
-  const [ready, setReady] = useState(false);
+  const events = [Event.PlaybackState, Event.PlaybackError];
+
   const [playerState, setPlayerState] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      await TrackPlayer.setupPlayer({});
-      setReady(true);
-    })();
-  }, []);
-
   useTrackPlayerEvents(events, event => {
-    if (event.type === TrackPlayerEvents.PLAYBACK_ERROR) {
+    if (event.type === Event.PlaybackError) {
       console.warn('An error occured while playing the current track.');
     }
-    if (event.type === TrackPlayerEvents.PLAYBACK_STATE) {
+    if (event.type === Event.PlaybackState) {
       setPlayerState(event.state);
     }
   });
 
-  const isPlaying = playerState === STATE_PLAYING;
+  const isPlaying = playerState === State.Playing;
 
-  return {isPlaying, ready};
+  return {isPlaying};
 };
 
 export default usePlayer;

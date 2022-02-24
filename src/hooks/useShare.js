@@ -31,8 +31,10 @@ const useShare = () => {
   }, [handleShare]);
 
   return {
-    sharedData, sharedMimeType, sharedExtraData;
-  }
+    sharedData,
+    sharedMimeType,
+    sharedExtraData,
+  };
 };
 
 export default useShare;
