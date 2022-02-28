@@ -36,7 +36,6 @@ const App = () => {
   }, [ready, url]);
 
   const onPress = async () => {
-    console.log('pressing');
     try {
       if (isPlaying) {
         await TrackPlayer.pause();
