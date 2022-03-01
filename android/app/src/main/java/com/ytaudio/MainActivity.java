@@ -1,4 +1,4 @@
-package com.ytbg;
+package com.gc.ytaudio;
 
 import com.facebook.react.ReactActivity;
 
