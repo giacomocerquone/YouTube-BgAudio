@@ -8,13 +8,15 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "build:android": "cd android && ./gradlew assembleRelease"
+    "build:android": "cd android && ./gradlew assembleRelease",
+    "emu": "./run-emulator.sh"
   },
   "dependencies": {
     "@react-native-community/slider": "^4.2.0",
     "react": "17.0.2",
     "react-native": "0.67.3",
     "react-native-share-menu": "^5.0.5",
+    "react-native-svg": "^12.3.0",
     "react-native-track-player": "^2.1.2",
     "react-native-ytdl": "^4.8.3"
   },

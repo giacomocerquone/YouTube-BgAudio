@@ -1,20 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, Button} from 'react-native';
 import ytdl from 'react-native-ytdl';
-import useIsPlaying from './src/hooks/useIsPlaying';
 import useShare from './src/hooks/useShare';
 import TrackPlayer from 'react-native-track-player';
 import usePlayer from './src/hooks/usePlayer';
+import {YT_URL_TEST} from './src/constants';
 
 const App = () => {
   const {sharedData, sharedExtraData} = useShare();
-  const {isPlaying} = useIsPlaying();
-  const {ready} = usePlayer();
+  const {ready, isPlaying, togglePlay} = usePlayer();
   const [url, setUrl] = useState();
 
   useEffect(
     function () {
       (async () => {
+        const res = await ytdl.getInfo(YT_URL_TEST);
+
+        console.log('RES', res);
+
         if (sharedData) {
           const downloadableURLs = await ytdl(sharedData, {
             quality: 'highestaudio',
@@ -35,20 +38,6 @@ const App = () => {
     })();
   }, [ready, url]);
 
-  const onPress = async () => {
-    try {
-      if (isPlaying) {
-        await TrackPlayer.pause();
-      } else {
-        if (url) {
-          await TrackPlayer.play();
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   if (!ready) {
     return null;
   }
@@ -60,7 +49,7 @@ const App = () => {
       <Text style={styles.instructions}>
         Extra data: {sharedExtraData ? JSON.stringify(sharedExtraData) : ''}
       </Text>
-      <Button title={isPlaying ? 'Pause' : 'Play'} onPress={onPress} />
+      <Button title={isPlaying ? 'Pause' : 'Play'} onPress={togglePlay} />
     </View>
   );
 };
