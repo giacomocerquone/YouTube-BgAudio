@@ -1,79 +1,109 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, Button} from 'react-native';
+import {StyleSheet, View, SafeAreaView, Image} from 'react-native';
 import ytdl from 'react-native-ytdl';
 import useShare from './src/hooks/useShare';
-import TrackPlayer from 'react-native-track-player';
 import usePlayer from './src/hooks/usePlayer';
-import {YT_URL_TEST} from './src/constants';
+import {unit} from './src/constants';
+import Text from './src/components/Text';
+import Player from './src/components/Player';
+import TrackPlayer from 'react-native-track-player';
 
 const App = () => {
   const {sharedData, sharedExtraData} = useShare();
   const {ready, isPlaying, togglePlay} = usePlayer();
-  const [url, setUrl] = useState();
+  const [videoData, setVideoData] = useState();
+
+  const thumbUrl =
+    videoData?.videoDetails?.thumbnails?.[
+      videoData?.videoDetails?.thumbnails?.length - 1
+    ]?.url;
+  const title = videoData?.videoDetails?.title;
+  const uploader = videoData?.videoDetails?.ownerChannelName;
 
   useEffect(
     function () {
       (async () => {
-        const res = await ytdl.getInfo(YT_URL_TEST);
-
-        console.log('RES', res);
-
-        if (sharedData) {
-          const downloadableURLs = await ytdl(sharedData, {
+        if (ready && sharedData) {
+          const res = await ytdl.getInfo(sharedData);
+          const format = ytdl.chooseFormat(res.formats, {
             quality: 'highestaudio',
+            filter: 'audioonly',
           });
 
-          setUrl(downloadableURLs?.[0]?.url);
+          if (format?.url) {
+            await TrackPlayer.add({
+              title: res?.videoDetails?.title,
+              artist: res?.videoDetails?.ownerChannelName,
+              url: format.url,
+            });
+          }
+
+          console.log('RES', res);
+          console.log('FORMAT', format);
+          setVideoData(res);
         }
       })();
     },
-    [sharedData],
+    [ready, sharedData, title, uploader],
   );
 
-  useEffect(() => {
-    (async () => {
-      if (url && ready) {
-        await TrackPlayer.add({title: 'Avaritia', artist: 'deadmau5', url});
-      }
-    })();
-  }, [ready, url]);
+  console.log('shared data', sharedData);
+  console.log(
+    'Extra data',
+    sharedExtraData ? JSON.stringify(sharedExtraData) : '',
+  );
 
   if (!ready) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>YouTube Audio Background</Text>
-      <Text style={styles.instructions}>Shared url: {sharedData}</Text>
-      <Text style={styles.instructions}>
-        Extra data: {sharedExtraData ? JSON.stringify(sharedExtraData) : ''}
-      </Text>
-      <Button title={isPlaying ? 'Pause' : 'Play'} onPress={togglePlay} />
-    </View>
+    <SafeAreaView style={styles.container}>
+      {videoData ? (
+        <>
+          <View style={{width: '100%'}}>
+            <Text style={styles.appTitle}>YTAudio</Text>
+            <Image source={{uri: thumbUrl}} style={styles.thumbnail} />
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.uploader}>{uploader}</Text>
+          </View>
+
+          <Player isPlaying={isPlaying} togglePlay={togglePlay} />
+        </>
+      ) : (
+        <Text style={styles.title}>Condividi un video youtube qui</Text>
+      )}
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#091227',
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    paddingHorizontal: unit * 4,
+    justifyContent: 'space-between',
+    paddingVertical: unit * 10,
   },
-  welcome: {
-    fontSize: 20,
+  appTitle: {
+    fontWeight: 'bold',
     textAlign: 'center',
-    margin: 10,
+    fontSize: 28,
+    marginBottom: unit * 16,
   },
-  instructions: {
+  thumbnail: {width: '100%', height: 260},
+  title: {
+    marginTop: unit * 6,
+    marginBottom: unit * 2,
     textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   },
-  image: {
-    width: '100%',
-    height: 200,
+  uploader: {
+    textAlign: 'center',
+    fontSize: 16,
+    textTransform: 'uppercase',
+    color: '#A5C0FF',
+    marginBottom: unit * 12,
   },
 });
 
