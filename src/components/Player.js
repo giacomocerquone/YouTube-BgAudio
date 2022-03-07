@@ -5,14 +5,26 @@ import TrackPlayer, {useProgress} from 'react-native-track-player';
 import Play from '../icons/Play';
 import Pause from '../icons/Pause';
 import {unit} from '../constants';
+import Text from './Text';
 
 const Player = ({togglePlay, isPlaying}) => {
   const progress = useProgress();
 
   return (
     <View>
+      <View style={styles.progressContainer}>
+        <Text style={styles.progressCounter}>
+          {new Date(progress.position * 1000).toISOString().substr(14, 5)}
+        </Text>
+        <Text style={styles.progressCounter}>
+          {new Date((progress.duration - progress.position) * 1000)
+            .toISOString()
+            .substr(14, 5)}
+        </Text>
+      </View>
+
       <Slider
-        style={styles.progressContainer}
+        style={styles.slider}
         value={progress.position}
         minimumValue={0}
         maximumValue={progress.duration}
@@ -37,9 +49,13 @@ export default Player;
 
 const styles = StyleSheet.create({
   progressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: unit * 6,
+  },
+  slider: {
     height: 40,
     width: 380,
-    marginTop: 25,
     flexDirection: 'row',
   },
   buttonsContainer: {
@@ -48,4 +64,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  progressCounter: {color: '#A5C0FF', fontSize: 14},
 });

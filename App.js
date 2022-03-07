@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, SafeAreaView, Image} from 'react-native';
+import {StyleSheet, View, SafeAreaView, Image, StatusBar} from 'react-native';
 import ytdl from 'react-native-ytdl';
 import useShare from './src/hooks/useShare';
 import usePlayer from './src/hooks/usePlayer';
@@ -59,6 +59,7 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="#091227" barStyle="light-content" />
       {videoData ? (
         <>
           <View style={{width: '100%'}}>
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
   },
   thumbnail: {width: '100%', height: 260},
   title: {
-    marginTop: unit * 6,
+    marginTop: unit * 10,
     marginBottom: unit * 2,
     textAlign: 'center',
   },
